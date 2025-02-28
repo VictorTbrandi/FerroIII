@@ -12,12 +12,20 @@
         <div class="container mt-3">
             <div style="display: flex; justify-content: space-between; width: 100%">
                 <h2 class="mb-4">Upload de Arquivo MP3</h2>
-                <a href="logoff-servlet">
-                    <button type="button" class="btn btn-primary">
-                        Sair
-                    </button>
-                </a>
+                <div style="display: flex; gap: 10px;">
+                    <a href="index.jsp">
+                        <button type="button" class="btn btn-primary">
+                            Home
+                        </button>
+                    </a>
+                    <a href="logoff-servlet">
+                        <button type="button" class="btn btn-primary">
+                            Sair
+                        </button>
+                    </a>
+                </div>
             </div>
+
             <form onsubmit="return validarEntrada()" action="upload-servlet" method="post" enctype="multipart/form-data">
                 <div cclass="mb-1">
                     <label for="musicFile" class="form-label">Escolha um arquivo MP3</label>

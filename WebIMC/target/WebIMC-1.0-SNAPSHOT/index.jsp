@@ -27,9 +27,9 @@
             font-weight: bold;
             padding: 10px 20px;
             color: #fff;
-            background-color: #0056b3; /* Azul mais vibrante */
+            background-color: #0056b3;
             border: 2px solid #fff;
-            border-radius: 50px; /* Deixa bem arredondado */
+            border-radius: 50px;
             text-transform: uppercase;
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease-in-out;
@@ -38,21 +38,24 @@
         }
 
         .btn-custom:hover {
-            background-color: #003d80; /* Tom mais escuro no hover */
+            background-color: #003d80;
             color: #f8f9fa;
-            transform: scale(1.05); /* Pequeno efeito de zoom */
+            transform: scale(1.05);
             box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.3);
         }
-
     </style>
-
 </head>
+
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
         <span class="navbar-brand mb-0 h1">PlayMySongs</span>
         <div>
-            <a href="login.html" class="btn btn-custom">
+            <%
+                HttpSession sessao = request.getSession(false);
+                boolean usuarioLogado = (sessao != null && sessao.getAttribute("usuario") != null);
+            %>
+            <a href="<%= usuarioLogado ? "cadastro-arquivo.jsp" : "login.html" %>" class="btn btn-custom">
                 🎵 Enviar Músicas
             </a>
         </div>
