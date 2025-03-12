@@ -22,6 +22,7 @@
             display: inline-block;
             border-radius: 4px;
         }
+
         .btn-custom {
             font-size: 1.1rem;
             font-weight: bold;
@@ -52,7 +53,11 @@
     <div class="container-fluid">
         <span class="navbar-brand mb-0 h1">PlayMySongs</span>
         <div>
-            <a href="login.html" class="btn btn-custom">
+            <%
+                HttpSession sessao = request.getSession(false);
+                boolean usuarioLogado = (sessao != null && sessao.getAttribute("usuario") != null);
+            %>
+            <a href="<%= usuarioLogado ? "cadastro-arquivo.jsp" : "login.html" %>" class="btn btn-custom">
                 🎵 Enviar Músicas
             </a>
         </div>
@@ -107,8 +112,10 @@
                     }
         %>
         <tr>
-            <td><%= file.getName() %></td>
-            <td><%= file.length() %></td>
+            <td><%= file.getName() %>
+            </td>
+            <td><%= file.length() %>
+            </td>
             <td>
                 <audio class="audio-player" controls style="width: 200%;transform: translateX(-135px);">
                     <source

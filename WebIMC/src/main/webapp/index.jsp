@@ -1,37 +1,80 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.io.File" %>
 <%@ page import="java.util.Arrays" %>
 
+
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <title>Listagem de Arquivos</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .filter-label {
+            font-size: 1.2rem;
+            color: #007bff;
+            font-weight: bold;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-left: 4px solid;
+            display: inline-block;
+            border-radius: 4px;
+        }
+
+        .btn-custom {
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 10px 20px;
+            color: #fff;
+            background-color: #0056b3; /* Azul mais vibrante */
+            border: 2px solid #fff;
+            border-radius: 50px; /* Deixa bem arredondado */
+            text-transform: uppercase;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease-in-out;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-custom:hover {
+            background-color: #003d80; /* Tom mais escuro no hover */
+            color: #f8f9fa;
+            transform: scale(1.05); /* Pequeno efeito de zoom */
+            box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+    </style>
+
 </head>
 <body>
-<!-- Cabeçalho -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1">Meu Projeto</span>
+        <span class="navbar-brand mb-0 h1">PlayMySongs</span>
         <div>
-            <a href="cadastro-arquivo.jsp" class="btn btn-outline-light">
-                Fazer Upload
+            <%
+                HttpSession sessao = request.getSession(false);
+                boolean usuarioLogado = (sessao != null && sessao.getAttribute("usuario") != null);
+            %>
+            <a href="<%= usuarioLogado ? "cadastro-arquivo.jsp" : "login.html" %>" class="btn btn-custom">
+                🎵 Enviar Músicas
             </a>
         </div>
     </div>
 </nav>
 
 <div class="container mt-4">
-    <h2>Arquivos no Diretório</h2>
+    <h2>My Playlist</h2>
+    <h3 class="filter-label">🔍 Filtros: Título, Estilo e Artista</h3>
+
     <form class="row g-3 mb-4" method="get" action="index.jsp">
         <div class="col-auto">
             <input
                     type="text"
                     class="form-control"
                     name="filter"
-                    placeholder="Buscar por nome"
+                    placeholder="Pesquisar"
                     value="<%= request.getParameter("filter") != null ? request.getParameter("filter") : "" %>"
             />
         </div>
@@ -39,9 +82,8 @@
             <button type="submit" class="btn btn-primary">Buscar</button>
         </div>
     </form>
-    <%
 
-        // Recebe o parâmetro de busca
+    <%
         String filtro = request.getParameter("filter");
         if (filtro == null) {
             filtro = "";
@@ -51,6 +93,7 @@
 
         if (pastaweb.exists() && pastaweb.isDirectory() && pastaweb.listFiles() != null && pastaweb.listFiles().length > 0) {
     %>
+
     <table class="table table-striped mt-3">
         <thead>
         <tr>
@@ -62,15 +105,11 @@
         <tbody>
         <%
             for (File file : pastaweb.listFiles()) {
-                if (file.isFile()) { // se é um arquivo e não uma pasta
+                if (file.isFile()) {
                     String nomeArquivo = file.getName();
-
-                    // Aplica o filtro (case-insensitive)
-                    if (!filtro.isEmpty() &&
-                            !nomeArquivo.toLowerCase().contains(filtro.toLowerCase())) {
-                        continue; // pula se não combinar
+                    if (!filtro.isEmpty() && !nomeArquivo.toLowerCase().contains(filtro.toLowerCase())) {
+                        continue;
                     }
-
         %>
         <tr>
             <td><%= file.getName() %>
@@ -78,7 +117,7 @@
             <td><%= file.length() %>
             </td>
             <td>
-                <audio controls style="width: 180px;">
+                <audio class="audio-player" controls style="width: 200%;transform: translateX(-135px);">
                     <source
                             src="<%= request.getContextPath() + "/download-servlet?file=" + nomeArquivo %>"
                             type="audio/mpeg"
@@ -93,18 +132,35 @@
         %>
         </tbody>
     </table>
+
     <%
     } else {
     %>
+
     <div class="alert alert-danger mt-3" role="alert">
         Diretório não encontrado ou caminho inválido.
     </div>
+
     <%
         }
     %>
 </div>
 
-<!-- Bootstrap 5 JS (opcional, caso precise de interatividade) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const players = document.querySelectorAll(".audio-player");
+
+        players.forEach(player => {
+            player.addEventListener("play", function () {
+                players.forEach(otherPlayer => {
+                    if (otherPlayer !== player) {
+                        otherPlayer.pause();
+                        otherPlayer.currentTime = 0; // Reinicia a música anterior
+                    }
+                });
+            });
+        });
+    });
+</script>
 </body>
 </html>
