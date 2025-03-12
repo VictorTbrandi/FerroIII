@@ -54,4 +54,9 @@ public class LoginServlet extends HttpServlet {
         }
         response.sendRedirect(".");
     }
+    private boolean usuarioEstaLogado(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        return session != null && session.getAttribute("usuario") != null;
+    }
+
 }
