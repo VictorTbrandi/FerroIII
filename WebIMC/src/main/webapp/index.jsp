@@ -157,9 +157,11 @@
     <%
     } else {
     %>
+
     <div class="alert alert-danger mt-3" role="alert">
         Diretório não encontrado ou caminho inválido.
     </div>
+
     <%
         }
     %>

@@ -65,7 +65,6 @@
         <button type="submit" class="btn btn-primary">Enviar</button>
     </form>
 </div>
-
 </div>
 <script>
     let regex = /^[a-zA-Z0-9_ ]+$/;
