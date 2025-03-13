@@ -25,8 +25,6 @@
             </a>
         </div>
     </div>
-
-    </div>
     <form onsubmit="return validarEntrada()" action="upload-servlet" method="post" enctype="multipart/form-data">
         <div cclass="mb-1">
             <label for="musicFile" class="form-label">Escolha um arquivo MP3</label>
@@ -66,6 +64,7 @@
         </div>
         <button type="submit" class="btn btn-primary">Enviar</button>
     </form>
+</div>
 </div>
 <script>
     let regex = /^[a-zA-Z0-9_ ]+$/;

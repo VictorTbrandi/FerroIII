@@ -41,11 +41,10 @@ public class UploadServlet extends HttpServlet {
         String fileName = splitJoin(musicName) + "_" + splitJoin(musicGenre) + "_" + splitJoin(artistName) + ".mp3";
         OutputStream out = null;
         InputStream filecontent = null;
-        PrintWriter writer = response.getWriter();
 
         try {
-            String var10002 = this.getServletContext().getRealPath("/");
-            File fpasta = new File(var10002 + "/" + pasta);
+            String path = this.getServletContext().getRealPath("/");
+            File fpasta = new File(path + "/" + pasta);
             fpasta.mkdir();
             String var10004 = fpasta.getAbsolutePath();
             out = new FileOutputStream(new File(var10004 + "/" + fileName));
@@ -56,14 +55,11 @@ public class UploadServlet extends HttpServlet {
             while((read = filecontent.read(bytes)) != -1) {
                 out.write(bytes, 0, read);
             }
-
-            writer.println("<script>alert(Novo arquivo " + fileName + " criado na pasta " + pasta + ")</script>");
             out.close();
             filecontent.close();
-            writer.close();
-        } catch (Exception var12) {
-            writer.println("Erro ao receber o arquivo");
-            writer.println("<br/> ERRO: " + var12.getMessage());
+            response.sendRedirect(request.getContextPath() + "/");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
 
     }
