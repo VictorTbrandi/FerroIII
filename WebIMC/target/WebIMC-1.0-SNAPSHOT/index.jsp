@@ -1,8 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.io.File" %>
 <%@ page import="java.util.Arrays" %>
-
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -22,6 +20,7 @@
             display: inline-block;
             border-radius: 4px;
         }
+
         .btn-custom {
             font-size: 1.1rem;
             font-weight: bold;
@@ -43,9 +42,23 @@
             transform: scale(1.05);
             box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.3);
         }
+
+        /* Responsividade e formatação fixa para a tabela */
+        .table-responsive {
+            margin-top: 20px;
+        }
+        .table-fixed {
+            table-layout: fixed;
+            width: 100%;
+        }
+        .table-fixed th, .table-fixed td {
+            width: 25%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 </head>
-
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
@@ -92,51 +105,61 @@
         if (pastaweb.exists() && pastaweb.isDirectory() && pastaweb.listFiles() != null && pastaweb.listFiles().length > 0) {
     %>
 
-    <table class="table table-striped mt-3">
-        <thead>
-        <tr>
-            <th>Nome do Arquivo</th>
-            <th>Tamanho (bytes)</th>
-            <th>Player</th>
-        </tr>
-        </thead>
-        <tbody>
-        <%
-            for (File file : pastaweb.listFiles()) {
-                if (file.isFile()) {
-                    String nomeArquivo = file.getName();
-                    if (!filtro.isEmpty() && !nomeArquivo.toLowerCase().contains(filtro.toLowerCase())) {
-                        continue;
+    <div class="table-responsive">
+        <table class="table table-striped table-fixed mt-3">
+            <thead>
+            <tr>
+                <th>Nome da Música</th>
+                <th>Gênero</th>
+                <th>Artista</th>
+                <th>Player</th>
+            </tr>
+            </thead>
+            <tbody>
+            <%
+                for (File file : pastaweb.listFiles()) {
+                    if (file.isFile()) {
+                        String nomeArquivo = file.getName();
+                        // Verifica se o arquivo é mp3
+                        if (!nomeArquivo.toLowerCase().endsWith(".mp3")) {
+                            continue;
+                        }
+                        if (!filtro.isEmpty() && !nomeArquivo.toLowerCase().contains(filtro.toLowerCase())) {
+                            continue;
+                        }
+
+                        // Remove a extensão e separa por "_"
+                        String nomeSemExtensao = nomeArquivo.substring(0, nomeArquivo.lastIndexOf("."));
+                        String[] partes = nomeSemExtensao.split("_");
+                        String nomeMusica = partes.length > 0 ? partes[0] : nomeArquivo;
+                        String genero = partes.length > 1 ? partes[1] : "";
+                        String artista = partes.length > 2 ? partes[2] : "";
+            %>
+            <tr>
+                <td title="<%= nomeMusica %>"><%= nomeMusica %></td>
+                <td title="<%= genero %>"><%= genero %></td>
+                <td title="<%= artista %>"><%= artista %></td>
+                <td>
+                    <audio controls class="audio-player" style="width: 100%">
+                        <source src="<%= request.getContextPath() + "/download-servlet?file=" + nomeArquivo %>" type="audio/mpeg" />
+                        Seu navegador não suporta HTML5 audio.
+                    </audio>
+                </td>
+            </tr>
+            <%
                     }
-        %>
-        <tr>
-            <td><%= file.getName() %></td>
-            <td><%= file.length() %></td>
-            <td>
-                <audio class="audio-player" controls style="width: 200%;transform: translateX(-135px);">
-                    <source
-                            src="<%= request.getContextPath() + "/download-servlet?file=" + nomeArquivo %>"
-                            type="audio/mpeg"
-                    />
-                    Seu navegador não suporta HTML5 audio.
-                </audio>
-            </td>
-        </tr>
-        <%
                 }
-            }
-        %>
-        </tbody>
-    </table>
+            %>
+            </tbody>
+        </table>
+    </div>
 
     <%
     } else {
     %>
-
     <div class="alert alert-danger mt-3" role="alert">
         Diretório não encontrado ou caminho inválido.
     </div>
-
     <%
         }
     %>
@@ -145,13 +168,12 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const players = document.querySelectorAll(".audio-player");
-
         players.forEach(player => {
             player.addEventListener("play", function () {
                 players.forEach(otherPlayer => {
                     if (otherPlayer !== player) {
                         otherPlayer.pause();
-                        otherPlayer.currentTime = 0; // Reinicia a música anterior
+                        otherPlayer.currentTime = 0;
                     }
                 });
             });
